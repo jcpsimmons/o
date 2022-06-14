@@ -6,22 +6,25 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
+	tm "github.com/buger/goterm"
+	"github.com/golang-module/carbon/v2"
+	"github.com/martinlindhe/notify"
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
 // timerCmd represents the timer command
 var timerCmd = &cobra.Command{
 	Use:   "timer",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Timing functions",
+	Long:  `Defaults to pomodoro - a timer that counts down to a break timer. It will send notifications as the periods switch.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		tm.Clear()
+		notify.Notify("O", "Pomodoro", "Pomodoro timer started", "")
 		fmt.Println("timer called")
+		pomodoro()
 	},
 }
 
@@ -37,4 +40,44 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// timerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func pomodoro() {
+	isWork := true
+
+	for {
+		minutes := 5
+
+		if isWork {
+			minutes = 25
+		}
+
+		deadline := carbon.Now().AddMinutes(minutes)
+		bar := progressbar.Default(int64(minutes) * 60)
+
+		for range time.Tick(1 * time.Second) {
+			tm.MoveCursor(1, 1)
+
+			printPomodoroHeader(isWork)
+
+			humanDiff := deadline.DiffForHumans()
+			secondsDiff := deadline.DiffAbsInSeconds(carbon.Now())
+
+			fmt.Printf("next break: %s\n", humanDiff)
+			bar.Set((minutes * 60) - int(secondsDiff))
+			tm.Flush()
+		}
+
+		isWork = !isWork
+	}
+
+}
+
+func printPomodoroHeader(isWork bool) {
+	if isWork {
+		tm.Println(tm.Background(tm.Color(tm.Bold("Time to work!"), tm.WHITE), tm.RED))
+		return
+	}
+
+	tm.Println(tm.Background(tm.Color(tm.Bold("Take a break"), tm.BLACK), tm.GREEN))
 }
