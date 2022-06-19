@@ -5,10 +5,13 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package gh
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 
+	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,9 +21,6 @@ type ConfigYaml struct {
 	} `yaml:"tokens"`
 }
 
-var Token = getToken()
-
-// ghCmd represents the gh command
 var GhCmd = &cobra.Command{
 	Use:   "gh",
 	Short: "A brief description of your command",
@@ -30,6 +30,20 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+}
+
+var ctx = context.Background()
+var client = generateClient()
+
+func generateClient() *github.Client {
+	token := getToken()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+	return client
 }
 
 func getToken() string {

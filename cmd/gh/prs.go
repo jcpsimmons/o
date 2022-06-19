@@ -5,13 +5,11 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package gh
 
 import (
-	"context"
 	"fmt"
 
 	tm "github.com/buger/goterm"
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
 )
 
 // ghCmd represents the gh command
@@ -30,14 +28,6 @@ to quickly create a Cobra application.`,
 }
 
 func listOpenPrs() {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: Token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-
 	query := "is:open+is:pr+author:jcpsimmons+archived:false"
 
 	opts := &github.SearchOptions{
