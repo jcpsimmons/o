@@ -2,30 +2,21 @@
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 
 */
-package cmd
+package gh
 
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-	"os"
 
 	tm "github.com/buger/goterm"
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
-	"gopkg.in/yaml.v3"
 )
 
-type ConfigYaml struct {
-	Tokens struct {
-		Github string `yaml:"github"`
-	} `yaml:"tokens"`
-}
-
 // ghCmd represents the gh command
-var ghCmd = &cobra.Command{
-	Use:   "gh",
+var prsCmd = &cobra.Command{
+	Use:   "prs",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -34,27 +25,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		token := getToken()
-		listRepos(token)
+		listOpenPrs()
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(ghCmd)
-}
-
-func getToken() string {
-	dirname, _ := os.UserHomeDir()
-	yfile, _ := ioutil.ReadFile(dirname + "/.o.yml")
-	var config ConfigYaml
-	yaml.Unmarshal(yfile, &config)
-	return config.Tokens.Github
-}
-
-func listRepos(token string) {
+func listOpenPrs() {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
+		&oauth2.Token{AccessToken: Token},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
@@ -87,4 +65,9 @@ func listRepos(token string) {
 		tm.MoveCursorDown(1)
 		tm.Flush()
 	}
+}
+
+func init() {
+	GhCmd.AddCommand(prsCmd)
+
 }

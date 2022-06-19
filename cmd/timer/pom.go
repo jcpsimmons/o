@@ -2,44 +2,32 @@
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 
 */
-package cmd
+package timer
 
 import (
 	"fmt"
 	"time"
 
-	tm "github.com/buger/goterm"
 	"github.com/golang-module/carbon/v2"
 	"github.com/martinlindhe/notify"
+
+	tm "github.com/buger/goterm"
+
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
 // timerCmd represents the timer command
-var timerCmd = &cobra.Command{
-	Use:   "timer",
-	Short: "Timing functions",
-	Long:  `Defaults to pomodoro - a timer that counts down to a break timer. It will send notifications as the periods switch.`,
+var pomodoroCmd = &cobra.Command{
+	Use:   "pom",
+	Short: "First cmd",
+	Long:  `first cmd.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tm.Clear()
 		notify.Notify("O", "Pomodoro", "Pomodoro timer started", "")
 		fmt.Println("timer called")
 		pomodoro()
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(timerCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// timerCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// timerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func pomodoro() {
@@ -80,4 +68,18 @@ func printPomodoroHeader(isWork bool) {
 	}
 
 	tm.Println(tm.Background(tm.Color(tm.Bold("Take a break"), tm.BLACK), tm.GREEN))
+}
+
+func init() {
+	TimerCmd.AddCommand(pomodoroCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// timerCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// timerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
