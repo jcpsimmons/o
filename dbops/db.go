@@ -1,4 +1,4 @@
-package main
+package dbops
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 var db *sql.DB
 
 func InitDB() {
-	database, err := sql.Open("sqlite3", "./db.db")
+	database, err := sql.Open("sqlite3", "./userdata.db")
 	if err != nil {
 		fmt.Println("Error opening database:", err)
 		return

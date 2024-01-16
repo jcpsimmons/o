@@ -1,4 +1,4 @@
-package main
+package dbops
 
 import (
 	_ "database/sql"
@@ -65,4 +65,45 @@ func GetUserByName(name string) (User, error) {
 	var user User
 	err := db.QueryRow("SELECT id, name, important_information, created_at FROM users WHERE name = ?", name).Scan(&user.ID, &user.Name, &user.ImportantInfo, &user.CreatedAt)
 	return user, err
+}
+
+func GetAllUsers() ([]User, error) {
+	rows, err := db.Query("SELECT id, name, important_information, created_at FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Name, &user.ImportantInfo, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+func GetUsersByNameStartsWith(startsWithChars string) ([]User, error) {
+	rows, err := db.Query("SELECT id, name, important_information, created_at FROM users WHERE name like ?", startsWithChars+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Name, &user.ImportantInfo, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
